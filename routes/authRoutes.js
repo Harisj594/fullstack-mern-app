@@ -7,6 +7,7 @@ const isAdmin = require('../middleware/adminMiddleware')
 router.post('/register', register)
 router.post('/login', login)
 
+// Profile
 router.get('/profile', protect, async (req, res) => {
   res.status(200).json({
     message: 'This is a protected route',
@@ -14,6 +15,7 @@ router.get('/profile', protect, async (req, res) => {
   });
 });
 
+// Dashboard
 router.get('/admin/dashboard', protect, isAdmin, (req, res) => {
     res.json({
         message: 'Welcome, admin',
