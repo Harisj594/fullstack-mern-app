@@ -1,34 +1,31 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { register, login } = require('../controllers/authController');
-const protect = require('../middleware/authMiddleware');
-const isAdmin = require('../middleware/adminMiddleware')
+const isAuthenticated  = require("../middleware/authMiddleware");
+const isAdmin = require("../middleware/adminMiddleware");
+const {
+  register,
+  login,
+  refresh,
+  logout,
+} = require("../controllers/authController");
 
-router.post('/register', register)
-router.post('/login', login)
+router.post("/register", register);
+router.post("/login", login);
+router.get("/refresh", refresh);
+router.post("/logout", logout);
 
-// Profile
-router.get('/profile', protect, async (req, res) => {
-  res.status(200).json({
-    message: 'This is a protected route',
+// Protected test route
+router.get("/profile", isAuthenticated, (req, res) => {
+  const user = req.user;
+  res.json({ success: true, result: { user } });
+});
+
+// Protected admin route (must be authenticated AND an admin)
+router.get("/admin/dashboard", isAuthenticated, isAdmin, (req, res) => {
+  res.json({
+    message: "Welcome, admin",
     user: req.user,
   });
 });
-
-// Dashboard
-router.get('/admin/dashboard', protect, isAdmin, (req, res) => {
-    res.json({
-        message: 'Welcome, admin',
-        user: req.user,
-    })
-})
-
-// router.get('/admin/dashboard', protect, isAdmin, (req, res) => {
-//     res.json({
-//         message: 'Welcome, admin',
-//         user: req.user,
-//     });
-// });
-
 
 module.exports = router;
